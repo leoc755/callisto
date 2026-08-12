@@ -26,7 +26,7 @@ from npl import NyxPlayer
 class CelesteEngine:
     def __init__(self):
         self.version = "1.16.8"
-        self.shell_ver = "1.2.1"
+        self.shell_ver = "1.2.2"
         self.cssver = "1.1"
         self.home_url = "https://nxhp.pages.dev/"
         self.bookmarks = [
@@ -412,7 +412,7 @@ class PyBrowser(QMainWindow):
     def __init__(self):
         super().__init__()
         self.engine = CelesteEngine()
-        self.setWindowTitle(f"Nexia {self.engine.shell_ver} (Luna {self.engine.version})"); self.resize(1100, 800); self.setup_ui()
+        self.setWindowTitle(f"Nexia {self.engine.shell_ver} (Luna {self.engine.version})"); self.resize(1280, 720); self.setup_ui()
         self.setStyleSheet("""
             QMainWindow { background-color: #140b0b; }
             QTabWidget::pane { border: 1px solid #3b0101; background: #140b0b; }
