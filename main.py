@@ -1,5 +1,5 @@
-#       Nexia Project
-#  GitHub.com/leoc755/nexia
+#       Callisto Project
+#  GitHub.com/leoc755/callisto
 
 import socket
 import ssl
@@ -25,8 +25,8 @@ from npl import NyxPlayer
 
 class CelesteEngine:
     def __init__(self):
-        self.version = "1.16.8"
-        self.shell_ver = "1.2.2"
+        self.version = "27.0.1"
+        self.shell_ver = "27.1.3"
         self.cssver = "1.1"
         self.home_url = "https://nxhp.pages.dev/"
         self.bookmarks = [
@@ -58,7 +58,7 @@ class CelesteEngine:
             # Safety fallback for the Exp branch
             os_info = "Windows NT 10.0 [UNK]; Win64; x64"
 
-        return f"Mozilla/5.0 ({os_info}) Nyxora/1.14 Nex/{self.shell_ver} (Luna, rv:{self.version})"
+        return f"Mozilla/5.0 ({os_info}) Nyxora/1.14 Nex/27.1.2 Callisto/{self.shell_ver} (Luna, rv:{self.version})"
     
     def nexia_request(self, url, redirects_left=20, ignore_security=False):
         """Luna 1.16 Core: Handles TLS 1.3, PHP Redirects, and SSL Warnings"""
@@ -322,6 +322,28 @@ class PyHTML_Canvas(QWidget):
                     current_x = margin
                     line_height = 0
                     continue
+                if el["tag"] == "img":
+                    url = el.get("url", "")
+                    if url:
+                        # Check cache or attempt synchronous fetch
+                        if url not in self.tab.shell.engine.image_cache:
+                            try:
+                                data = urllib.request.urlopen(url, timeout=1).read()
+                                self.tab.shell.engine.image_cache[url] = QImage.fromData(data)
+                            except Exception:
+                                self.tab.shell.engine.image_cache[url] = None
+
+                        img = self.tab.shell.engine.image_cache.get(url)
+                        if img and not img.isNull():
+                            # Constrain width and compute proportional height
+                            max_w = max(10, self.width() - 60)
+                            w = min(img.width(), max_w)
+                            h = int(img.height() * (w / max(1, img.width())))
+
+                            # Draw image directly onto painter canvas
+                            painter.drawImage(QRect(margin, y_off, w, h), img)
+                            y_off += h + 20
+                    continue
 
                 # 2. Setup Font and Styles
                 font = QFont("Times New Roman", 12)
@@ -412,62 +434,142 @@ class PyBrowser(QMainWindow):
     def __init__(self):
         super().__init__()
         self.engine = CelesteEngine()
-        self.setWindowTitle(f"Nexia {self.engine.shell_ver} (Luna {self.engine.version})"); self.resize(1280, 720); self.setup_ui()
+        self.setWindowTitle(f"Callisto {self.engine.shell_ver} (Luna {self.engine.version})"); self.resize(1280, 720); self.setup_ui()
         self.setStyleSheet("""
-            QMainWindow { background-color: #140b0b; }
-            QTabWidget::pane { border: 1px solid #3b0101; background: #140b0b; }
+            QMainWindow {
+                background-color: #121212;
+                background-image: url("assets/background.jpg");
+                background-repeat: no-repeat;
+                background-position: center top;
+            }
+
+            QTabWidget::pane { background: rgba(0, 0, 0, 0); }
             
             QLineEdit {
-                background-color: #231a1a;
-                color: #fff;
-                border: 1px solid #3b0101; /* Solid Neon Border */
+                background-color: rgba(255, 255, 255, 0.10);
+                color: #ffffff;
+                
+                border: 1px solid rgba(255, 255, 255, 0.20);
                 padding: 5px 15px;
                 border-radius: 15px;
+                
+                selection-background-color: rgba(255, 255, 255, 0.30);
+                selection-color: #ffffff;
+            }
+
+            QLineEdit:focus {
+                background-color: rgba(255, 255, 255, 0.18);
+                border: 1px solid rgba(255, 255, 255, 0.40);
             }
             
             QPushButton { 
-                background-color: #3b0101; 
+                background-color: rgba(255, 255, 255, 0.12); 
                 color: #ffffff; 
-                border: none; 
+                border: 1px solid rgba(255, 255, 255, 0.18); 
                 padding: 5px 12px; 
                 border-radius: 8px; 
             }
-            QPushButton:hover { background-color: #ff0000; }
 
-            /* Simplified Rendered Page Border */
+            QPushButton:hover { 
+                background-color: rgba(255, 255, 255, 0.25); 
+                border: 1px solid rgba(255, 255, 255, 0.35);
+            }
+
+            QPushButton:pressed {
+                background-color: rgba(255, 255, 255, 0.18);
+                border: 1px solid rgba(255, 255, 255, 0.20);
+            }
+
             QWebEngineView {
-                border: 1px solid #3b0101;
-                background-color: #000;
+                border: 1px solid rgba(255, 255, 255, 0.15);
+                background-color: rgba(0, 0, 0, 0.60);
+                border-radius: 8px;
             }
 
-            /* Simple Scrollbar (No Gradients) */
-            QScrollBar:vertical { border: none; background: #140b0b; width: 10px; }
-            QScrollBar::handle:vertical { 
-                background: #3b0101; 
-                border-radius: 5px; 
+            QScrollBar:vertical {
+                border: none;
+                background: rgba(0, 0, 0, 0.20);
+                width: 10px;
+                margin: 0px;
+                border-radius: 5px;
             }
-            QScrollBar::handle:vertical:hover { background: #ff0000; }
-            QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { height: 0px; }
+
+            QScrollBar::handle:vertical { 
+                background: rgba(255, 255, 255, 0.20);
+                border: 1px solid rgba(255, 255, 255, 0.10);
+                border-radius: 5px; 
+                min-height: 20px;
+            }
+
+            QScrollBar::handle:vertical:hover { 
+                background: rgba(255, 255, 255, 0.40);
+                border: 1px solid rgba(255, 255, 255, 0.25);
+            }
+
+            QScrollBar::handle:vertical:pressed { 
+                background: rgba(255, 255, 255, 0.55);
+            }
+
+            QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { 
+                height: 0px; 
+                background: none;
+            }
+
+            QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+                background: none;
+            }
         """)
 
         self.tabs.setStyleSheet("""
             QTabBar::tab { 
-                background: #231a1a; 
-                color: #f0f0f0; 
-                padding: 8px 12px; 
-                border-top-left-radius: 4px; 
-                border-top-right-radius: 4px; 
-                margin-right: 2px;
+                background: rgba(255, 255, 255, 0.08); 
+                color: rgba(255, 255, 255, 0.70); 
+                padding: 8px 28px 8px 14px; 
+                border-top-left-radius: 6px; 
+                border-top-right-radius: 6px; 
+                border: 1px solid rgba(255, 255, 255, 0.10);
+                border-bottom: none;
+                margin-right: 3px;
             }
-            /* Use a solid neon line instead of a gradient */
-            QTabBar::tab:selected { 
-                background: #140b0b; 
-                border-top: 2px solid #ff0000; /* Solid accent is faster than gradient */
+
+            QTabBar::tab:hover {
+                background: rgba(255, 255, 255, 0.15);
                 color: #ffffff;
             }
-            /* Remove custom close-button styling to let the system draw the X */
+
+            QTabBar::tab:selected { 
+                background: rgba(255, 255, 255, 0.20); 
+                color: #ffffff;
+                border: 1px solid rgba(255, 255, 255, 0.25);
+                border-bottom: none;
+                border-top: 2px solid rgba(255, 255, 255, 0.85); 
+            }
+
             QTabBar::close-button {
-                subcontrol-position: right;
+                subcontrol-position: right center;
+                subcontrol-origin: padding;
+                width: 16px;
+                height: 16px;
+                margin-right: 8px;
+                margin-top: 2px;
+                margin-bottom: 2px;
+                image: url("assets/close.png");
+            }
+
+            QTabBar::close-button:hover {
+                background-color: rgba(255, 255, 255, 0.25);
+                border-radius: 4px;
+                width: 16px;
+                height: 16px;
+                image: url("assets/close.png");
+            }
+
+            QTabBar::close-button:pressed {
+                background-color: rgba(255, 255, 255, 0.40);
+                border-radius: 4px;
+                width: 16px;
+                height: 16px;
+                image: url("assets/close.png");
             }
         """)
         
@@ -494,7 +596,7 @@ class PyBrowser(QMainWindow):
 
     def view_source(self):
         tab = self.current_tab()
-        if tab: SourceViewer("Nexia Source Viewer", tab.raw_source, self).exec()
+        if tab: SourceViewer("Callisto Source Viewer", tab.raw_source, self).exec()
 
     def view_stats(self):
         tab = self.current_tab()
@@ -504,7 +606,7 @@ class PyBrowser(QMainWindow):
         report += f"Global Selectors Found: {len(tab.aurelius.styles)}\n"
         for sel in tab.aurelius.styles: report += f"  [{sel}] -> {list(tab.aurelius.styles[sel].keys())}\n"
         report += f"\nElements with Inline Styles: {inline_count}\n"
-        SourceViewer("Nexia Style Diagnostics", report, self).exec()
+        SourceViewer("Callisto Style Diagnostics", report, self).exec()
 
     def add_new_tab(self, url=None):
         new_tab = BrowserTab(self); idx = self.tabs.addTab(new_tab, "New Tab"); self.tabs.setCurrentIndex(idx)
@@ -528,7 +630,17 @@ class PyBrowser(QMainWindow):
         if tab and tab.forward_stack: tab.load_url(tab.forward_stack.pop(), clear_forward=False)
     def refresh(self): self.current_tab().load_url(self.current_tab().base_url, save_history=False)
     def update_loading_state(self, is_l, url=""):
-        self.statusBar().setStyleSheet("color: #f0f0f0; background-color: #140b0b;")
+        self.statusBar().setStyleSheet("""
+            QStatusBar {
+                color: rgba(255, 255, 255, 0.85);
+                background-color: rgba(20, 20, 20, 0.45);
+                border-top: 1px solid rgba(255, 255, 255, 0.20);
+            }
+            
+            QStatusBar::item {
+                border: none;
+            }
+        """)
         self.statusBar().showMessage(f"Loading {url}..." if is_l else "Ready.")
     def go_to_url(self):
         url = self.address_bar.text()
@@ -540,7 +652,7 @@ class PyBrowser(QMainWindow):
         root.title("version Info")
         # Set geometry(widthxheight)
         root.geometry('350x200')
-        lbl = Label(root, text = f"-- version info --\nNexia {self.engine.shell_ver}\nLuna {self.engine.version}\nStellae {self.engine.cssver}")
+        lbl = Label(root, text = f"-- version info --\nCallisto {self.engine.shell_ver}\nLuna {self.engine.version}\nStellae {self.engine.cssver}")
         lbl.grid()
         root.mainloop()
 
