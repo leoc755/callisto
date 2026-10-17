@@ -1,0 +1,50 @@
+QTabBar::tab { 
+    background: rgba(255, 255, 255, 0.08); 
+    color: rgba(255, 255, 255, 0.70); 
+    padding: 8px 28px 8px 14px; 
+    border-top-left-radius: 6px; 
+    border-top-right-radius: 6px; 
+    border: 1px solid rgba(255, 255, 255, 0.10);
+    border-bottom: none;
+    margin-right: 3px;
+}
+
+QTabBar::tab:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #ffffff;
+}
+
+QTabBar::tab:selected { 
+    background: rgba(255, 255, 255, 0.20); 
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-bottom: none;
+    border-top: 2px solid rgba(255, 255, 255, 0.85); 
+}
+
+QTabBar::close-button {
+    subcontrol-position: right center;
+    subcontrol-origin: padding;
+    width: 16px;
+    height: 16px;
+    margin-right: 8px;
+    margin-top: 2px;
+    margin-bottom: 2px;
+    image: url("assets/close.png");
+}
+
+QTabBar::close-button:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+    border-radius: 4px;
+    width: 16px;
+    height: 16px;
+    image: url("assets/close.png");
+}
+
+QTabBar::close-button:pressed {
+    background-color: rgba(255, 255, 255, 0.40);
+    border-radius: 4px;
+    width: 16px;
+    height: 16px;
+    image: url("assets/close.png");
+}
