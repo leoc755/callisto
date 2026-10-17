@@ -9,6 +9,7 @@ import sys
 import urllib.request
 import html
 import re
+import os
 from tkinter import *
 
 
@@ -26,7 +27,7 @@ from npl import NyxPlayer
 class CelesteEngine:
     def __init__(self):
         self.version = "27.0.1"
-        self.shell_ver = "27.1.3"
+        self.shell_ver = "27.2.4"
         self.cssver = "1.1"
         self.home_url = "https://nxhp.pages.dev/"
         self.bookmarks = [
@@ -431,147 +432,27 @@ class PyHTML_Canvas(QWidget):
                     self.tab.load_url(urljoin(self.tab.base_url, url))
 
 class PyBrowser(QMainWindow):
+    def qssld(self, filename: str) -> str:
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        file_path = os.path.join(base_dir, "assets", "qss", filename)
+        
+        if os.path.exists(file_path):
+            with open(file_path, "r", encoding="utf-8") as f:
+                return f.read()
+        else:
+            print(f"Warning: Missing stylesheet at {file_path}")
+            return ""
+    
     def __init__(self):
         super().__init__()
         self.engine = CelesteEngine()
         self.setWindowTitle(f"Callisto {self.engine.shell_ver} (Luna {self.engine.version})"); self.resize(1280, 720); self.setup_ui()
-        self.setStyleSheet("""
-            QMainWindow {
-                background-color: #121212;
-                background-image: url("assets/background.jpg");
-                background-repeat: no-repeat;
-                background-position: center top;
-            }
-
-            QTabWidget::pane { background: rgba(0, 0, 0, 0); }
-            
-            QLineEdit {
-                background-color: rgba(255, 255, 255, 0.10);
-                color: #ffffff;
-                
-                border: 1px solid rgba(255, 255, 255, 0.20);
-                padding: 5px 15px;
-                border-radius: 15px;
-                
-                selection-background-color: rgba(255, 255, 255, 0.30);
-                selection-color: #ffffff;
-            }
-
-            QLineEdit:focus {
-                background-color: rgba(255, 255, 255, 0.18);
-                border: 1px solid rgba(255, 255, 255, 0.40);
-            }
-            
-            QPushButton { 
-                background-color: rgba(255, 255, 255, 0.12); 
-                color: #ffffff; 
-                border: 1px solid rgba(255, 255, 255, 0.18); 
-                padding: 5px 12px; 
-                border-radius: 8px; 
-            }
-
-            QPushButton:hover { 
-                background-color: rgba(255, 255, 255, 0.25); 
-                border: 1px solid rgba(255, 255, 255, 0.35);
-            }
-
-            QPushButton:pressed {
-                background-color: rgba(255, 255, 255, 0.18);
-                border: 1px solid rgba(255, 255, 255, 0.20);
-            }
-
-            QWebEngineView {
-                border: 1px solid rgba(255, 255, 255, 0.15);
-                background-color: rgba(0, 0, 0, 0.60);
-                border-radius: 8px;
-            }
-
-            QScrollBar:vertical {
-                border: none;
-                background: rgba(0, 0, 0, 0.20);
-                width: 10px;
-                margin: 0px;
-                border-radius: 5px;
-            }
-
-            QScrollBar::handle:vertical { 
-                background: rgba(255, 255, 255, 0.20);
-                border: 1px solid rgba(255, 255, 255, 0.10);
-                border-radius: 5px; 
-                min-height: 20px;
-            }
-
-            QScrollBar::handle:vertical:hover { 
-                background: rgba(255, 255, 255, 0.40);
-                border: 1px solid rgba(255, 255, 255, 0.25);
-            }
-
-            QScrollBar::handle:vertical:pressed { 
-                background: rgba(255, 255, 255, 0.55);
-            }
-
-            QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical { 
-                height: 0px; 
-                background: none;
-            }
-
-            QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
-                background: none;
-            }
-        """)
-
-        self.tabs.setStyleSheet("""
-            QTabBar::tab { 
-                background: rgba(255, 255, 255, 0.08); 
-                color: rgba(255, 255, 255, 0.70); 
-                padding: 8px 28px 8px 14px; 
-                border-top-left-radius: 6px; 
-                border-top-right-radius: 6px; 
-                border: 1px solid rgba(255, 255, 255, 0.10);
-                border-bottom: none;
-                margin-right: 3px;
-            }
-
-            QTabBar::tab:hover {
-                background: rgba(255, 255, 255, 0.15);
-                color: #ffffff;
-            }
-
-            QTabBar::tab:selected { 
-                background: rgba(255, 255, 255, 0.20); 
-                color: #ffffff;
-                border: 1px solid rgba(255, 255, 255, 0.25);
-                border-bottom: none;
-                border-top: 2px solid rgba(255, 255, 255, 0.85); 
-            }
-
-            QTabBar::close-button {
-                subcontrol-position: right center;
-                subcontrol-origin: padding;
-                width: 16px;
-                height: 16px;
-                margin-right: 8px;
-                margin-top: 2px;
-                margin-bottom: 2px;
-                image: url("assets/close.png");
-            }
-
-            QTabBar::close-button:hover {
-                background-color: rgba(255, 255, 255, 0.25);
-                border-radius: 4px;
-                width: 16px;
-                height: 16px;
-                image: url("assets/close.png");
-            }
-
-            QTabBar::close-button:pressed {
-                background-color: rgba(255, 255, 255, 0.40);
-                border-radius: 4px;
-                width: 16px;
-                height: 16px;
-                image: url("assets/close.png");
-            }
-        """)
+        main_qss = self.qssld("QMainWindow.qss")
+        if main_qss:
+            self.setStyleSheet(main_qss)
+        tab_qss = self.qssld("QMainWindow.tabs.qss")
+        if tab_qss:
+            self.tabs.setStyleSheet(tab_qss)
         
 
 
@@ -630,17 +511,9 @@ class PyBrowser(QMainWindow):
         if tab and tab.forward_stack: tab.load_url(tab.forward_stack.pop(), clear_forward=False)
     def refresh(self): self.current_tab().load_url(self.current_tab().base_url, save_history=False)
     def update_loading_state(self, is_l, url=""):
-        self.statusBar().setStyleSheet("""
-            QStatusBar {
-                color: rgba(255, 255, 255, 0.85);
-                background-color: rgba(20, 20, 20, 0.45);
-                border-top: 1px solid rgba(255, 255, 255, 0.20);
-            }
-            
-            QStatusBar::item {
-                border: none;
-            }
-        """)
+        stat_qss = self.qssld("statusBar.qss")
+        if stat_qss:
+            self.statusBar().setStyleSheet(stat_qss)
         self.statusBar().showMessage(f"Loading {url}..." if is_l else "Ready.")
     def go_to_url(self):
         url = self.address_bar.text()
